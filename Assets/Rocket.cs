@@ -8,6 +8,11 @@ public class Rocket : MonoBehaviour
     private Transform m_transform;
     private AudioSource m_audioSource;
 
+    [SerializeField]
+    private float m_rcsThrust = 100f;
+    [SerializeField]
+    private float m_speedThrust = 700f;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -19,25 +24,15 @@ public class Rocket : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ProcessInput();
+        Thrust();
+        Rotate();
     }
 
-    private void ProcessInput()
+    private void Thrust()
     {
         if (m_audioSource.isPlaying)
         {
             m_audioSource.mute = true;
-        }
-
-        if (Input.GetKey(KeyCode.A))
-        {
-            print("Left");
-            m_transform.Rotate(Vector3.forward);
-        }
-        else if (Input.GetKey(KeyCode.D))
-        {
-            print("Right");
-            m_transform.Rotate(Vector3.back);
         }
 
         if (Input.GetKey(KeyCode.Space))
@@ -51,7 +46,35 @@ public class Rocket : MonoBehaviour
             {
                 m_audioSource.mute = false;
             }
-            m_rigidBody.AddRelativeForce(new Vector3(0, 1, 0), ForceMode.Force);
+            m_rigidBody.AddRelativeForce(new Vector3(0, 1, 0) * GetSpeedFrame(), ForceMode.Force);
         }
+    }
+
+    private void Rotate()
+    {
+        m_rigidBody.freezeRotation = true;
+
+        if (Input.GetKey(KeyCode.A))
+        {
+            print("Left");
+            m_transform.Rotate(Vector3.forward * GetRotationFrame());
+        }
+        else if (Input.GetKey(KeyCode.D))
+        {
+            print("Right");
+            m_transform.Rotate(Vector3.back * GetRotationFrame());
+        }
+
+        m_rigidBody.freezeRotation = false;
+    }
+
+    private float GetRotationFrame()
+    {
+        return m_rcsThrust * Time.deltaTime;
+    }
+
+    private float GetSpeedFrame()
+    {
+        return m_speedThrust * Time.deltaTime;
     }
 }
