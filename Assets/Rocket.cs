@@ -13,8 +13,10 @@ public class Rocket : MonoBehaviour
     [SerializeField]
     private float m_speedThrust = 700f;
 
+    #region Messages
+
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         m_rigidBody = gameObject.GetComponent<Rigidbody>();
         m_transform = gameObject.GetComponent<Transform>();
@@ -22,11 +24,28 @@ public class Rocket : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         Thrust();
         Rotate();
     }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == Tags.Friendly)
+        {
+            print(Tags.Friendly);
+        }
+        else
+        {
+            print(collision.gameObject.name + " hostile");
+        }
+    }
+
+    #endregion
+
+
+    #region Private methods
 
     private void Thrust()
     {
@@ -37,7 +56,6 @@ public class Rocket : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Space))
         {
-            print("Thrust");
             if (!m_audioSource.isPlaying)
             {
                 m_audioSource.Play();
@@ -56,12 +74,10 @@ public class Rocket : MonoBehaviour
 
         if (Input.GetKey(KeyCode.A))
         {
-            print("Left");
             m_transform.Rotate(Vector3.forward * GetRotationFrame());
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            print("Right");
             m_transform.Rotate(Vector3.back * GetRotationFrame());
         }
 
@@ -76,5 +92,12 @@ public class Rocket : MonoBehaviour
     private float GetSpeedFrame()
     {
         return m_speedThrust * Time.deltaTime;
+    }
+
+    #endregion
+
+    private static class Tags
+    {
+        public const string Friendly = "Friendly";
     }
 }
