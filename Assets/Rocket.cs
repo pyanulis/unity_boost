@@ -5,15 +5,17 @@ using UnityEngine.SceneManagement;
 
 public class Rocket : MonoBehaviour
 {
-    private const float sceneDelay = 2f;
+    private const float c_sceneDelay = 2f;
     private Rigidbody m_rigidBody;
     private Transform m_transform;
     private AudioSource m_audioSource;
+    private Light m_headLight;
 
     private State m_state;
 
     [SerializeField] private float m_rcsThrust = 100f;
     [SerializeField] private float m_speedThrust = 700f;
+    [SerializeField] private float m_levelLoadDelay = c_sceneDelay;
     [SerializeField] private AudioClip m_audioEngine;
     [SerializeField] private AudioClip m_audioLevel;
     [SerializeField] private AudioClip m_audioCollision;
@@ -31,6 +33,8 @@ public class Rocket : MonoBehaviour
         m_rigidBody = gameObject.GetComponent<Rigidbody>();
         m_transform = gameObject.GetComponent<Transform>();
         m_audioSource = gameObject.GetComponent<AudioSource>();
+
+        m_headLight = transform.Find("Head Light").GetComponent<Light>();
     }
 
     // Update is called once per frame
@@ -60,13 +64,15 @@ public class Rocket : MonoBehaviour
     {
         m_state = State.Dying;
 
+        m_headLight.enabled = false;
+
         m_audioSource.Stop();
         m_audioSource.PlayOneShot(m_audioCollision);
 
         m_particlesEngine.Stop();
         m_particlesDeath.Play();
 
-        Invoke(nameof(LoadPreviousScene), sceneDelay);
+        Invoke(nameof(LoadPreviousScene), m_levelLoadDelay);
     }
 
     private void StartSuccessSequence()
@@ -79,7 +85,7 @@ public class Rocket : MonoBehaviour
         m_particlesEngine.Stop();
         m_particlesSuccess.Play();
 
-        Invoke(nameof(LoadNextScene), sceneDelay);
+        Invoke(nameof(LoadNextScene), m_levelLoadDelay);
     }
 
     #endregion
