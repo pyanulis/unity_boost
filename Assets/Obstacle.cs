@@ -5,6 +5,8 @@ using UnityEngine;
 public class Obstacle : MonoBehaviour
 {
     private AudioSource m_audioSource;
+    [SerializeField]
+    private AudioClip m_audioCollision;
 
     #region Messages
 
@@ -21,16 +23,16 @@ public class Obstacle : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        print($"Collision: {collision.relativeVelocity}, {collision.impulse}");
+        //print($"Collision: {collision.relativeVelocity}, {collision.impulse}");
 
-        if (m_audioSource.isPlaying)
-        {
-            m_audioSource.Stop();
-        }
-        else
-        {
-            m_audioSource.Play();
-        }
+        //if (m_audioSource.isPlaying)
+        //{
+        //    m_audioSource.Stop();
+        //}
+        //else
+        //{
+        //    m_audioSource.PlayOneShot(m_audioCollision);
+        //}
     }
 
     #endregion
