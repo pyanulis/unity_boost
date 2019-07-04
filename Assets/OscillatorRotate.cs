@@ -42,10 +42,13 @@ public class OscillatorRotate : MonoBehaviour
         switch (axis)
         {
             case Axis.X:
+                angle += m_startAngle.x;
                 return new Vector3(angle, m_startAngle.y, m_startAngle.z);
             case Axis.Y:
+                angle += m_startAngle.y;
                 return new Vector3(m_startAngle.x, angle, m_startAngle.z);
             case Axis.Z:
+                angle += m_startAngle.z;
                 return new Vector3(m_startAngle.x, m_startAngle.y, angle);
         }
 
