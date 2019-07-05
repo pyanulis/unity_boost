@@ -12,6 +12,7 @@ public class Rocket : MonoBehaviour
     private Light m_headLight;
 
     private State m_state;
+    private bool m_disableCollision;
 
     [SerializeField] private float m_rcsThrust = 100f;
     [SerializeField] private float m_speedThrust = 700f;
@@ -44,11 +45,16 @@ public class Rocket : MonoBehaviour
 
         RespondToThrustInput();
         RespondToRotateInput();
+
+        if (Debug.isDebugBuild)
+        {
+            RespondToDebug();
+        }
     }
 
     void OnCollisionEnter(Collision collision)
     {
-        if (m_state != State.Alive) return;
+        if (m_state != State.Alive || m_disableCollision) return;
 
         if (collision.gameObject.tag == Tags.Finish)
         {
@@ -122,6 +128,18 @@ public class Rocket : MonoBehaviour
         m_rigidBody.freezeRotation = false;
     }
 
+    private void RespondToDebug()
+    {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            LoadNextScene();
+        }
+        else if (Input.GetKeyDown(KeyCode.C))
+        {
+            m_disableCollision = !m_disableCollision;
+        }
+    }
+
     private void ApplyThrust()
     {
         m_rigidBody.AddRelativeForce(new Vector3(0, 1, 0) * GetSpeedFrame(), ForceMode.Force);
@@ -144,7 +162,9 @@ public class Rocket : MonoBehaviour
 
     private void LoadNextScene()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        int next = SceneManager.GetActiveScene().buildIndex + 1;
+        next = next >= SceneManager.sceneCountInBuildSettings ? 0 : next;
+        SceneManager.LoadScene(next);
     }
 
     private void LoadPreviousScene()
