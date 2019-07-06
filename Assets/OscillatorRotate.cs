@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Assets;
 
 [DisallowMultipleComponent]
 public class OscillatorRotate : MonoBehaviour
@@ -53,18 +54,5 @@ public class OscillatorRotate : MonoBehaviour
         }
 
         return new Vector3(m_startAngle.x, m_startAngle.y, m_startAngle.z);
-    }
-
-    public enum Axis
-    {
-        X,
-        Y,
-        Z
-    }
-
-    public enum Spin
-    {
-        Clockwise,
-        Counterclockwise,
     }
 }

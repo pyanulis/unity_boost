@@ -1,48 +1,28 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Assets;
 
 [DisallowMultipleComponent]
 public class RotateThrust : MonoBehaviour
 {
-    private const float c_maxVel = 1500f;
+    [SerializeField] private float m_maxVel = 1500f;
+    [SerializeField] private Axis m_axis;
+    [SerializeField] private Spin m_spin;
+    [SerializeField] private float m_accel = 1000;
+    [SerializeField] private float m_deccel = -500;
+    [SerializeField] private float m_setStartVel = 100;
+    [SerializeField] private KeyCode m_thrustKey = KeyCode.Space;
 
-    [SerializeField]
-    private Axis m_axis;
-
-    [SerializeField]
-    private Spin m_spin;
+    private float m_startVel;
+    private float m_vel = 0f;
+    private float m_curAccel = 0;
+    private bool m_spinning;
 
     private Vector3 m_startAngle;
 
-    private bool m_spaceDown;
     private float m_actionTime;
     private float m_delta;
-
-    [SerializeField]
-    private float m_accel = 1000;
-
-    [SerializeField]
-    private float m_deccel = -500;
-
-    [SerializeField]
-    private float m_startVel;
-
-    [SerializeField]
-    private float m_vel = 1;
-
-    [SerializeField]
-    private float m_curAccel = 0;
-
-    [SerializeField]
-    private bool m_spinning;
-
-
-    [SerializeField]
-    private float m_setStartVel = 100;
-    private float m_spinAngle;
-
-    private float Angle360;
 
     // Start is called before the first frame update
     void Start()
@@ -53,102 +33,74 @@ public class RotateThrust : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && !m_spaceDown)
-        {
-            m_startVel = m_spinning ? m_vel : m_setStartVel;
-            m_spaceDown = true;
-            m_spinning = true;
-            m_actionTime = Time.time;
-            m_startAngle = transform.eulerAngles;
-
-            m_curAccel = m_accel;
-        }
-        else if (Input.GetKeyUp(KeyCode.Space) && m_spaceDown)
-        {
-            m_spaceDown = false;
-            m_spinning = true;
-            m_actionTime = Time.time;
-            m_startVel = m_vel;
-            m_startAngle = transform.eulerAngles;
-
-            m_curAccel = m_deccel;
-        }
+        HandleThrustKey();
 
         if (!m_spinning) return;
 
-        if (m_spaceDown && Time.time > m_actionTime)
-        {
-            m_delta = Time.time - m_actionTime;
-        }
-        else if (m_actionTime > Mathf.Epsilon)
-        {
-            m_delta = Time.time - m_actionTime;
-        }
-
-        float degrees = GetGegrees(m_axis, m_spin, m_delta);
-        Angle360 = 360 * degrees % 360;
-        transform.eulerAngles = GetRotation(m_axis, m_spin, degrees);
+        float angle = GetFrameSpinAngle();
+        transform.eulerAngles = GetRotation(m_axis, m_spin, angle, m_startAngle);
     }
 
-    private void Thrust()
+    private void HandleThrustKey()
     {
+        if (Input.GetKeyDown(m_thrustKey))
+        {
+            m_startVel = m_spinning ? m_vel : m_setStartVel;
+            m_curAccel = m_accel;
+
+            InitSpinning(startVel: m_spinning ? m_vel : m_setStartVel, accel: m_accel);
+        }
+        else if (Input.GetKeyUp(m_thrustKey))
+        {
+            m_startVel = m_vel;
+            m_curAccel = m_deccel;
+
+            InitSpinning(startVel: m_vel, accel: m_deccel);
+        }
     }
 
-    private float GetGegrees(Axis axis, Spin spin, float timeDelta)
+    private void InitSpinning(float startVel, float accel)
     {
-        if (!m_spinning) return 0f;
-        m_spinAngle = m_startVel * timeDelta + (m_curAccel * Mathf.Pow(timeDelta, 2f) / 2f);
+        m_spinning = true;
+        m_actionTime = Time.time;
+        m_startAngle = transform.eulerAngles;
+        m_startVel = startVel;
+        m_curAccel = accel;
+    }
+
+    private float GetFrameSpinAngle()
+    {
+        float timeDelta = Time.time - m_actionTime;
+        float spinAngle = m_startVel * timeDelta + (m_curAccel * Mathf.Pow(timeDelta, 2f) / 2f);
         m_vel = m_startVel + m_curAccel * timeDelta;
         if (m_vel <= 0)
         {
             m_spinning = false;
-            m_curAccel = 0;
-            //m_startVel = 0f;
-            //m_actionTime = Time.time;
-            //m_startAngle = transform.eulerAngles;
         }
-        else if (m_vel > c_maxVel)
+        else if (m_vel > m_maxVel)
         {
-            m_curAccel = 0;
-            m_startVel = c_maxVel;
-            m_actionTime = Time.time;
-            m_startAngle = transform.eulerAngles;
+            InitSpinning(startVel: m_maxVel, accel: 0);
         }
-        m_spinAngle = spin == Spin.Counterclockwise ? m_spinAngle : -m_spinAngle;
 
-        return m_spinAngle;
+        return spinAngle;
     }
 
-    private Vector3 GetRotation(Axis axis, Spin spin, float angle)
+    private static Vector3 GetRotation(Axis axis, Spin spin, float angle, Vector3 startAngle)
     {
-        //angle = spin == Spin.Counterclockwise ? angle : -angle;
-
+        angle = spin == Spin.Counterclockwise ? angle : -angle;
         switch (axis)
         {
             case Axis.X:
-                angle += m_startAngle.x;
-                return new Vector3(angle, m_startAngle.y, m_startAngle.z);
+                angle += startAngle.x;
+                return new Vector3(angle, startAngle.y, startAngle.z);
             case Axis.Y:
-                angle += m_startAngle.y;
-                return new Vector3(m_startAngle.x, angle, m_startAngle.z);
+                angle += startAngle.y;
+                return new Vector3(startAngle.x, angle, startAngle.z);
             case Axis.Z:
-                angle += m_startAngle.z;
-                return new Vector3(m_startAngle.x, m_startAngle.y, angle);
+                angle += startAngle.z;
+                return new Vector3(startAngle.x, startAngle.y, angle);
         }
 
-        return new Vector3(m_startAngle.x, m_startAngle.y, m_startAngle.z);
-    }
-
-    public enum Axis
-    {
-        X,
-        Y,
-        Z
-    }
-
-    public enum Spin
-    {
-        Clockwise,
-        Counterclockwise,
+        return new Vector3(startAngle.x, startAngle.y, startAngle.z);
     }
 }
