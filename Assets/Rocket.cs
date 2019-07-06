@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Assets;
 
 public class Rocket : MonoBehaviour
 {
@@ -22,6 +24,7 @@ public class Rocket : MonoBehaviour
     [SerializeField] private AudioClip m_audioCollision;
 
     [SerializeField] private ParticleSystem m_particlesEngine;
+    [SerializeField] private ParticleSystem m_particlesEngine2;
     [SerializeField] private ParticleSystem m_particlesSuccess;
     [SerializeField] private ParticleSystem m_particlesDeath;
 
@@ -72,10 +75,9 @@ public class Rocket : MonoBehaviour
 
         m_headLight.enabled = false;
 
-        m_audioSource.Stop();
-        m_audioSource.PlayOneShot(m_audioCollision);
+        EngineEffectsStop();
 
-        m_particlesEngine.Stop();
+        m_audioSource.PlayOneShot(m_audioCollision);
         m_particlesDeath.Play();
 
         Invoke(nameof(LoadPreviousScene), m_levelLoadDelay);
@@ -85,10 +87,9 @@ public class Rocket : MonoBehaviour
     {
         m_state = State.Transcending;
 
-        m_audioSource.Stop();
-        m_audioSource.PlayOneShot(m_audioLevel);
+        EngineEffectsStop();
 
-        m_particlesEngine.Stop();
+        m_audioSource.PlayOneShot(m_audioLevel);
         m_particlesSuccess.Play();
 
         Invoke(nameof(LoadNextScene), m_levelLoadDelay);
@@ -107,8 +108,7 @@ public class Rocket : MonoBehaviour
         }
         else 
         {
-            m_audioSource.Stop();
-            m_particlesEngine.Stop();
+            EngineEffectsStop();
         }
     }
 
@@ -143,11 +143,7 @@ public class Rocket : MonoBehaviour
     private void ApplyThrust()
     {
         m_rigidBody.AddRelativeForce(new Vector3(0, 1, 0) * GetSpeedFrame(), ForceMode.Force);
-        m_particlesEngine.Play();
-        if (!m_audioSource.isPlaying)
-        {
-            m_audioSource.PlayOneShot(m_audioEngine);
-        }
+        EngineEffectsPlay();
     }
 
     private float GetRotationFrame()
@@ -159,6 +155,26 @@ public class Rocket : MonoBehaviour
     {
         return m_speedThrust * Time.deltaTime;
     }
+
+    private void EngineEffectsStop()
+    {
+        SafeAction(m_audioSource.Stop);
+        SafeAction(m_particlesEngine.Stop);
+        SafeAction(m_particlesEngine2.Stop);
+    }
+
+    private void EngineEffectsPlay()
+    {
+        SafeAction(m_particlesEngine.Play);
+        SafeAction(m_particlesEngine2.Play);
+
+        if (m_audioSource && !m_audioSource.isPlaying)
+        {
+            m_audioSource.PlayOneShot(m_audioEngine);
+        }
+    }
+
+    private void SafeAction(Action action) => Utils.UnitySafeAction(action);
 
     private void LoadNextScene()
     {

@@ -6,6 +6,13 @@ using System.Threading.Tasks;
 
 namespace Assets
 {
+    public static class Utils
+    {
+        public static void UnitySafeAction(Action action)
+        {
+            if (((UnityEngine.Object)action.Target)) action();
+        }
+    }
     public enum Axis
     {
         X,
