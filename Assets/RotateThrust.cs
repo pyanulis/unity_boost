@@ -27,7 +27,7 @@ public class RotateThrust : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        m_startAngle = transform.eulerAngles;
+        m_startAngle = transform.localEulerAngles;
     }
 
     // Update is called once per frame
@@ -38,7 +38,7 @@ public class RotateThrust : MonoBehaviour
         if (!m_spinning) return;
 
         float angle = GetFrameSpinAngle();
-        transform.eulerAngles = GetRotation(m_axis, m_spin, angle, m_startAngle);
+        transform.localEulerAngles = GetRotation(m_axis, m_spin, angle, m_startAngle);
     }
 
     private void HandleThrustKey()
@@ -63,7 +63,7 @@ public class RotateThrust : MonoBehaviour
     {
         m_spinning = true;
         m_actionTime = Time.time;
-        m_startAngle = transform.eulerAngles;
+        m_startAngle = transform.localEulerAngles;
         m_startVel = startVel;
         m_curAccel = accel;
     }
