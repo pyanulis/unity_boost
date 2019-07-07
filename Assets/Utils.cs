@@ -25,4 +25,11 @@ namespace Assets
         Clockwise,
         Counterclockwise,
     }
+
+    public enum RocketState
+    {
+        Alive,
+        Collided,
+        Transcending
+    }
 }

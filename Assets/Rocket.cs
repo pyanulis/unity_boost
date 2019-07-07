@@ -13,7 +13,7 @@ public class Rocket : MonoBehaviour
     private AudioSource m_audioSource;
     private Light m_headLight;
 
-    private State m_state;
+    private RocketState m_state;
     private bool m_disableCollision;
 
     [SerializeField] private float m_rcsThrust = 100f;
@@ -28,12 +28,14 @@ public class Rocket : MonoBehaviour
     [SerializeField] private ParticleSystem m_particlesSuccess;
     [SerializeField] private ParticleSystem m_particlesDeath;
 
+    public RocketState State => m_state;
+
     #region Messages
 
     // Start is called before the first frame update
     private void Start()
     {
-        m_state = State.Alive;
+        m_state = RocketState.Alive;
         m_rigidBody = gameObject.GetComponent<Rigidbody>();
         m_transform = gameObject.GetComponent<Transform>();
         m_audioSource = gameObject.GetComponent<AudioSource>();
@@ -44,7 +46,7 @@ public class Rocket : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (m_state != State.Alive) return;
+        if (m_state != RocketState.Alive) return;
 
         RespondToThrustInput();
         RespondToRotateInput();
@@ -57,7 +59,7 @@ public class Rocket : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        if (m_state != State.Alive || m_disableCollision) return;
+        if (m_state != RocketState.Alive || m_disableCollision) return;
 
         if (collision.gameObject.tag == Tags.Finish)
         {
@@ -71,7 +73,7 @@ public class Rocket : MonoBehaviour
 
     private void StartDeathSequence()
     {
-        m_state = State.Dying;
+        m_state = RocketState.Collided;
 
         m_headLight.enabled = false;
 
@@ -85,7 +87,7 @@ public class Rocket : MonoBehaviour
 
     private void StartSuccessSequence()
     {
-        m_state = State.Transcending;
+        m_state = RocketState.Transcending;
 
         EngineEffectsStop();
 
@@ -197,12 +199,5 @@ public class Rocket : MonoBehaviour
         public const string Friendly = "Friendly";
         public const string Finish = "Finish";
         public const string Obstacle = "Obstacle";
-    }
-
-    private enum State
-    {
-        Alive,
-        Dying,
-        Transcending
     }
 }
