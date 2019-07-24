@@ -35,6 +35,8 @@ public class Rocket : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
+        Screen.fullScreen = false;
+
         m_state = RocketState.Alive;
         m_rigidBody = gameObject.GetComponent<Rigidbody>();
         m_transform = gameObject.GetComponent<Transform>();
