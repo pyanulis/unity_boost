@@ -679,8 +679,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f51ad39b13720848a0387531eae56f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_rcsThrust: 150
-  m_speedThrust: 700
+  m_rcsThrust: 200
+  m_speedThrust: 800
   m_levelLoadDelay: 2
   m_audioEngine: {fileID: 8300000, guid: 180d97feade9d814cbab37e99a3ad75a, type: 3}
   m_audioLevel: {fileID: 8300000, guid: 7d16b8f1d50ee404f98b9901824c9d99, type: 3}

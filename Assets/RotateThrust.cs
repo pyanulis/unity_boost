@@ -43,14 +43,14 @@ public class RotateThrust : MonoBehaviour
 
     private void HandleThrustKey()
     {
-        if (Input.GetKeyDown(m_thrustKey))
+        if (IsThrustDown())
         {
             m_startVel = m_spinning ? m_vel : m_setStartVel;
             m_curAccel = m_accel;
 
             InitSpinning(startVel: m_spinning ? m_vel : m_setStartVel, accel: m_accel);
         }
-        else if (Input.GetKeyUp(m_thrustKey))
+        else if (IsThrustUp())
         {
             m_startVel = m_vel;
             m_curAccel = m_deccel;
@@ -102,5 +102,18 @@ public class RotateThrust : MonoBehaviour
         }
 
         return new Vector3(startAngle.x, startAngle.y, startAngle.z);
+    }
+
+    private bool IsThrustDown()
+    {
+        return Input.GetKeyDown(m_thrustKey) ||
+            Input.GetKeyDown(KeyCode.UpArrow) ||
+            Input.GetKeyDown(KeyCode.W);
+    }
+    private bool IsThrustUp()
+    {
+        return Input.GetKeyUp(m_thrustKey) ||
+            Input.GetKeyUp(KeyCode.UpArrow) ||
+            Input.GetKeyUp(KeyCode.W);
     }
 }

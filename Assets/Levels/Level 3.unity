@@ -8544,9 +8544,9 @@ Light:
   m_Type: 0
   m_Color: {r: 1, g: 0.90058327, b: 0, a: 1}
   m_Intensity: 100
-  m_Range: 33.3
-  m_SpotAngle: 47
-  m_InnerSpotAngle: 21.80208
+  m_Range: 43
+  m_SpotAngle: 67
+  m_InnerSpotAngle: 6
   m_CookieSize: 10
   m_Shadows:
     m_Type: 0
@@ -8618,12 +8618,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 519f92c850ab77443a910410b8b14773, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_isPeriodRandom: 1
   m_period: 93.473236
-  m_maxIntendisy: 100
-  m_minPeriod: 50
-  m_maxPeriod: 100
-  m_enableRange: 10
-  m_enableByZero: 0
+  m_maxIntensity: 100
+  m_minPeriod: 0
+  m_maxPeriod: 10
+  m_enableRange: 4
+  m_enableByZero: 1
   m_flickEnable: 1
 --- !u!43 &1449440163
 Mesh:

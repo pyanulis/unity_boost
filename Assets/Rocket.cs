@@ -16,8 +16,8 @@ public class Rocket : MonoBehaviour
     private RocketState m_state;
     private bool m_disableCollision;
 
-    [SerializeField] private float m_rcsThrust = 100f;
-    [SerializeField] private float m_speedThrust = 700f;
+    [SerializeField] private float m_rcsThrust = 200f;
+    [SerializeField] private float m_speedThrust = 800f;
     [SerializeField] private float m_levelLoadDelay = c_sceneDelay;
     [SerializeField] private AudioClip m_audioEngine;
     [SerializeField] private AudioClip m_audioLevel;
@@ -84,7 +84,7 @@ public class Rocket : MonoBehaviour
         m_audioSource.PlayOneShot(m_audioCollision);
         m_particlesDeath.Play();
 
-        Invoke(nameof(LoadPreviousScene), m_levelLoadDelay);
+        Invoke(nameof(ReloadScene), m_levelLoadDelay);
     }
 
     private void StartSuccessSequence()
@@ -106,7 +106,7 @@ public class Rocket : MonoBehaviour
 
     private void RespondToThrustInput()
     {
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKey(KeyCode.Space) || Input.GetAxis("Vertical") > 0)
         {
             ApplyThrust();
         }
@@ -120,11 +120,12 @@ public class Rocket : MonoBehaviour
     {
         m_rigidBody.freezeRotation = true;
 
-        if (Input.GetKey(KeyCode.A))
+        //if (Input.GetKey(KeyCode.A))
+        if (Input.GetAxis("Horizontal") < 0)
         {
             m_transform.Rotate(Vector3.forward * GetRotationFrame());
         }
-        else if (Input.GetKey(KeyCode.D))
+        else if (Input.GetAxis("Horizontal") > 0)//if (Input.GetKey(KeyCode.D))
         {
             m_transform.Rotate(Vector3.back * GetRotationFrame());
         }
@@ -185,6 +186,11 @@ public class Rocket : MonoBehaviour
         int next = SceneManager.GetActiveScene().buildIndex + 1;
         next = next >= SceneManager.sceneCountInBuildSettings ? 0 : next;
         SceneManager.LoadScene(next);
+    }
+
+    private void ReloadScene()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     private void LoadPreviousScene()

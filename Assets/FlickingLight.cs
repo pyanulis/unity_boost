@@ -8,8 +8,9 @@ public class FlickingLight : MonoBehaviour
 {
     private const float c_defaultPeriod = 5f;
 
+    [SerializeField] private bool m_isPeriodRandom = true;
     [SerializeField] private float m_period = c_defaultPeriod;
-    [SerializeField] private float m_maxIntendisy = 100;
+    [SerializeField] private float m_maxIntensity = 100;
     [SerializeField] private float m_minPeriod = 0.1f;
     [SerializeField] private float m_maxPeriod = 100f;
     [SerializeField]
@@ -30,13 +31,13 @@ public class FlickingLight : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        m_period = Random.Range(m_minPeriod, m_maxPeriod);
+        m_period = m_isPeriodRandom ? Random.Range(m_minPeriod, m_maxPeriod) : m_period;
         float cycles = Time.time / m_period;
 
         const float tau = Mathf.PI * 2;
         float rawSinWave = Mathf.Sin(cycles * tau);
         float factor = rawSinWave / 2f + 0.5f;
-        m_light.intensity = m_maxIntendisy * factor;
+        m_light.intensity = m_maxIntensity * factor;
 
         if (m_flickEnable)
         {
